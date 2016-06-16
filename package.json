@@ -1,0 +1,20 @@
+{
+  "name": "mlogc-handler",
+  "version": "1.0.0",
+  "description": "Routes Mlogc logs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "mlogc",
+    "mod-security",
+    "mod_security"
+  ],
+  "author": "Vidya-org",
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^3.4.0",
+    "ramda": "^0.21.0"
+  }
+}
