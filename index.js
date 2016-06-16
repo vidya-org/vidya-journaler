@@ -1,62 +1,69 @@
-var http = require("http");
- /*begin autenticacao*/
+'use strict';
 
- /*end autenticacao*/
- var url = require("url");
- var fs = require("fs");
- var crypto = require("crypto");
- var auth = require("http-auth");
- var logDir = "/usr/local/vidya/parser/logs/new";						/* Diretorio pai: Contem os diretorios que serao criados pelo node.js*/
- var datetime = new Date();					/* Data atual */
- //var currentDir = logDir + "/" + "log_" + datetime.getTime();	/* Diretorio atual: Diretorio que ira receber os logs neste momento. */
- var currentDirTemp = "/usr/local/vidya/parser/logs/new";
- var currentDir = "/usr/local/vidya/parser/data";
- /* Lembre-se que este valor altera dependendo da quantidade de logs recebidos */
- var MAX_FILES_IN_DIR = 8192					/* Numero indicando o limite de arquivos que um diretorio pode ter */
- /* Repare que isto pode ser ultrapassado: indica somente o numero no qual, */
- /* se ultrapassado, sera criado um nodo diretorio de logs */
- var CHECKPOINT_LIMIT = 8192					/* Numero indicando quantas requisicoes sao necessarias ate se fazer a */
- /* checagem para criacao de novos diretorios */
- var MIN_HOURS_CHECK = 1						/* */
- var numberOfRequests = 0;
- var changingDir = 0;
- var path = "";
- var htpasswdPath = __dirname + "/htpasswd";
+const http     = require('http');
+const BPromise = require('bluebird')
 
+const url    = require('url');
+const path   = require('path');
+const fs     = BPromise.promisifyAll(require('fs'));
+const crypto = require('crypto');
+const auth = require('http-auth');
+const logDir = '/usr/local/vidya/parser/logs/new'; /* Diretorio pai: Contem os diretorios que serao criados pelo node.js*/
+const datetime = new Date();
 
+const currentDirTemp = '/usr/local/vidya/parser/logs/new';
+const currentDir = '/usr/local/vidya/parser/data';
 
+/* Lembre-se que este valor altera dependendo da quantidade de logs recebidos */
+const MAX_FILES_IN_DIR = 8192; /* Numero indicando o limite de arquivos que um diretorio pode ter */
 
- //variavel para atualizacao do arquivo do node
- //var update = false;
+/* Repare que isto pode ser ultrapassado: indica somente o numero no qual,
+   se ultrapassado, sera criado um nodo diretorio de logs */
+const CHECKPOINT_LIMIT = 8192; /* Numero indicando quantas requisicoes sao necessarias ate se fazer a */
 
- /* Verifica se existem diretorios vazios. Se existirem diretorios vazios ha algum tempo, eh feita a remocao */
- function checkEmptyDirs(){
-   try{
-     fs.readdir(logDir, function(err, dirs){
-       for(i=0; i < dirs.length; i++){
-         path = logDir + "/" + dirs[i]
-       //Se for o diretorio corrente, pula para o proximo
-       if (path == currentDir) {
-         continue;
-       }
-       stats = fs.statSync(path)
-       var tempDate = new Date();
-       var exceededLimitTime = ((tempDate - stats.mtime) > MIN_HOURS_CHECK*60*60*1000) ? true : false;
-       if (stats.isDirectory() && exceededLimitTime && dirs.length > 1){
-         files = fs.readdirSync(path)
-         if (files.length == 0){
-           console.log("Removendo " + path);
-           fs.rmdirSync(path)
-         }
-       }
+/* checagem para criacao de novos diretorios */
+const MIN_HOURS_CHECK = 1;
+let numberOfRequests = 0;
+let changingDir = 0;
+let path = '';
+const htpasswdPath = __dirname + '/htpasswd';
 
-     }
-   });
-   }catch (err) {
-     console.log(err);
-   }
- }
+/* Verifica se existem diretorios vazios. Se existirem diretorios vazios ha algum tempo, eh feita a remocao */
 
+function list_log_directories (root_dir) {
+  return fs.readdir(root_dir)
+    .then(dirs => {
+      return dirs.map(dir => path.join(root_dir,`/${dir}`))
+        .filter(dir => (dir_path !== root_dir) && dir.isDirectory());
+    });
+}
+
+function get_empty_directories (directories) {
+  return BPromise.filter(directories, directory => {
+    return fs.readdir(directory)
+      .then(files => {
+        return files.length === 0;
+      });
+    });
+}
+
+function get_expired_directories (directories) {
+  return BPromise.filter(directories, directory => {
+    return fs.stat(directory)
+      .then(stats => {
+        const current_timestamp = new Date();
+
+        return (current_timestamp - stats.mtime) > MIN_HOURS_CHECK*60*60*1000;
+      });
+}
+
+function check_empty_dirs () {
+  list_log_directories(logDir)
+    .then(get_empty_directories)
+    .then(get_expired_directories)
+    .each(fs.rmdir)
+    .catch(console.error);
+}
 
  /***************** INICIO *********************/
  //console.log("Cleaning log directories. Please wait...");
