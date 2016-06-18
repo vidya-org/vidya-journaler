@@ -21,5 +21,13 @@ describe('Filename generator', _ => {
 
       done();
     });
+
+    it('should have \'log\' as the first field', done => {
+      const first_field = generated_filename.split('_')[0];
+
+      expect(first_field).to.be.equal('log');
+
+      done();
+    });
   });
 });
