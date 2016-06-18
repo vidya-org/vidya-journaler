@@ -29,5 +29,13 @@ describe('Filename generator', _ => {
 
       done();
     });
+
+    it('should have a numeric timestamp as the second field', done => {
+      const second_field = generated_filename.split('_')[1];
+
+      expect(second_field).to.match(/^[0-9]+$/);
+
+      done();
+    });
   });
 });
