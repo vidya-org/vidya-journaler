@@ -45,5 +45,13 @@ describe('Filename generator', _ => {
 
       done();
     });
+
+    it('should have received hash as the forth field', done => {
+      const forth_field = generated_filename.split('_')[3];
+
+      expect(forth_field).to.equal(hash);
+
+      done();
+    });
   });
 });
