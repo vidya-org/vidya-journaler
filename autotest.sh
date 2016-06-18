@@ -11,8 +11,8 @@ if [ $ulimit_size -lt 4000 ]; then
 fi
 
 ignore_list=()
-ignore_list+=('/.git/')
-ignore_list+=('/coverage/')
+ignore_list+=('/.git')
+ignore_list+=('/coverage')
 ignore_list+=('/node_modules/')
 ignore_list+=('/package.json')
 ignore_list+=('/autotest.sh')
