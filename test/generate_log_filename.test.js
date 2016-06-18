@@ -37,5 +37,13 @@ describe('Filename generator', _ => {
 
       done();
     });
+
+    it('should have a random number as the third field', done => {
+      const third_field = generated_filename.split('_')[2];
+
+      expect(third_field).to.match(/^[0-9]+[.][0-9]+$/);
+
+      done();
+    });
   });
 });
