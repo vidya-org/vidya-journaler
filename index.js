@@ -1,40 +1,39 @@
 'use strict';
 
 const http     = require('http');
-const BPromise = require('bluebird')
+const BPromise = require('bluebird');
 
-const url    = require('url');
-const path   = require('path');
+// const url    = require('url');
+const node_path   = require('path');
 const fs     = BPromise.promisifyAll(require('fs'));
 const crypto = require('crypto');
-const auth = require('http-auth');
+const auth   = require('http-auth');
 const logDir = '/usr/local/vidya/parser/logs/new'; /* Diretorio pai: Contem os diretorios que serao criados pelo node.js*/
-const datetime = new Date();
 
 const currentDirTemp = '/usr/local/vidya/parser/logs/new';
 const currentDir = '/usr/local/vidya/parser/data';
 
 /* Lembre-se que este valor altera dependendo da quantidade de logs recebidos */
-const MAX_FILES_IN_DIR = 8192; /* Numero indicando o limite de arquivos que um diretorio pode ter */
+// const MAX_FILES_IN_DIR = 8192; /* Numero indicando o limite de arquivos que um diretorio pode ter */
 
 /* Repare que isto pode ser ultrapassado: indica somente o numero no qual,
    se ultrapassado, sera criado um nodo diretorio de logs */
-const CHECKPOINT_LIMIT = 8192; /* Numero indicando quantas requisicoes sao necessarias ate se fazer a */
+// const CHECKPOINT_LIMIT = 8192; /* Numero indicando quantas requisicoes sao necessarias ate se fazer a */
 
 /* checagem para criacao de novos diretorios */
 const MIN_HOURS_CHECK = 1;
-let numberOfRequests = 0;
-let changingDir = 0;
-let path = '';
-const htpasswdPath = __dirname + '/htpasswd';
+// let numberOfRequests = 0;
+// let changingDir = 0;
+// let path = '';
+const htpasswdPath = node_path.join(__dirname, '/htpasswd');
 
 /* Verifica se existem diretorios vazios. Se existirem diretorios vazios ha algum tempo, eh feita a remocao */
 
 function list_log_directories (root_dir) {
   return fs.readdir(root_dir)
     .then(dirs => {
-      return dirs.map(dir => path.join(root_dir,`/${dir}`))
-        .filter(dir => (dir_path !== root_dir) && dir.isDirectory());
+      return dirs.map(dir => node_path.join(root_dir, `/${dir}`))
+        .filter(dir => (dir !== root_dir) && dir.isDirectory());
     });
 }
 
@@ -44,7 +43,7 @@ function get_empty_directories (directories) {
       .then(files => {
         return files.length === 0;
       });
-    });
+  });
 }
 
 function get_expired_directories (directories) {
@@ -53,8 +52,9 @@ function get_expired_directories (directories) {
       .then(stats => {
         const current_timestamp = new Date();
 
-        return (current_timestamp - stats.mtime) > MIN_HOURS_CHECK*60*60*1000;
+        return (current_timestamp - stats.mtime) > MIN_HOURS_CHECK * 60 * 60 * 1000;
       });
+  });
 }
 
 function check_empty_dirs () {
@@ -65,28 +65,32 @@ function check_empty_dirs () {
     .catch(console.error);
 }
 
- /***************** INICIO *********************/
- //console.log("Cleaning log directories. Please wait...");
- //checkEmptyDirs();
- //return;
+/** *************** INICIO *********************/
+// console.log("Cleaning log directories. Please wait...");
+// checkEmptyDirs();
+// return;
 
- //Checando se os diretorios iniciais existem...
- try { fs.statSync(logDir).isDirectory() }
- catch (er) { fs.mkdirSync(logDir,0755) }
+// Checando se os diretorios iniciais existem...
+try {
+  fs.statSync(logDir).isDirectory();
+} catch (err) {
+  fs.mkdirSync(logDir, 0o755);
+}
 
- try { fs.statSync(currentDir).isDirectory() }
- catch (er) { fs.mkdirSync(currentDir,0755) }
+try {
+  fs.statSync(currentDir).isDirectory();
+} catch (err) {
+  fs.mkdirSync(currentDir, 0o755);
+}
 
+// se não existir o arquivo de usuarios o arquivo sera criado
+if (fs.existsSync(htpasswdPath)) {
+  // console.log ("arquivo ja existe")  ;
+} else {
+  fs.writeFileSync(htpasswdPath, 'teste:teste');
+}
 
- // se não existir o arquivo de usuarios o arquivo sera criado
- if (fs.existsSync(htpasswdPath)) {
-   //console.log ("arquivo ja existe")  ;
- }
- else
-   fs.writeFileSync(htpasswdPath, "teste:teste");
-
-
- /*var basic = auth({
+ /* var basic = auth({
      authRealm: "Private area",
      authFile: htpasswdPath,
      authType: "basic"
@@ -97,93 +101,75 @@ function check_empty_dirs () {
    console.log ("arquivo alterado")  ;
  });*/
 
- var basic = auth.basic({
-   realm: "Vidya",
-   file: htpasswdPath
- });
+const basic = auth.basic({
+  realm: 'Vidya',
+  file:   htpasswdPath
+});
 
+// Iniciando o server...
+http.createServer(basic, function (request, response) {
+  // console.log ("Hello " + request.user);
+  console.log('Request from ip:' + request.connection.remoteAddress);
+  // response.end();
 
+  // Metodos nao permitidos
+  if (request.method !== 'PUT') {
+    response.writeHead(405, {'Content-Type': 'text/plain'});
+  } else {
+    response.writeHead(200, {'Content-Type': 'text/plain'});
+    const bodyarr = [];
+    request.on('data', function (chunk) {
+      bodyarr.push(chunk);
+    });
+    request.on('end', function () {
+      const data = bodyarr.join('');
+      const datetime = new Date();
+      const randomNumber = Math.random() * 999999;
 
- //Iniciando o server...
- http.createServer(basic, function(request, response) {
+      const filename = 'log_' + datetime.getTime() + '_' + randomNumber.toFixed(6) + '_' + crypto.createHash('md5').update(data).digest('hex');
+      const filepath = currentDir + '/' + filename;
+      const filepathTemp = currentDirTemp + '/' + filename;
 
-     //console.log ("Hello " + request.user);
-     console.log ("Request from ip:" + request.connection.remoteAddress);
-       //response.end();
+      fs.writeFileSync(filepath, data);
+      fs.linkSync(filepath, filepathTemp);
 
-       //Metodos nao permitidos
-       if (request.method != 'PUT'){
-         response.writeHead(405, {"Content-Type": "text/plain"});
-       }else{
-         response.writeHead(200, {"Content-Type": "text/plain"});
-         var bodyarr = [];
-         request.on('data', function(chunk){
-           bodyarr.push(chunk);
-         })
-         request.on('end', function(){
-           data = bodyarr.join('');
-           datetime = new Date();
-           randomNumber = new Number(Math.random() * 999999);
-           var path = require('path');
+      let files_parser = [];
+      let files_mlogc = [];
 
-           filename = "log_" + datetime.getTime() + "_" + randomNumber.toFixed(6) + "_" + crypto.createHash('md5').update(data).digest("hex");
-           filepath = currentDir + "/" + filename;
-           filepathTemp = currentDirTemp + "/" + filename;
+      fs.readdir(currentDirTemp, function (err, files) {
+        if (err) {
+          throw err;
+        }
+        files_parser = files;
+      });
 
-
-           fs.writeFileSync(filepath,data);
-           fs.linkSync(filepath,filepathTemp );
-
-
-
-           var files_parser = [];
-           var files_mlogc = [];
-
-
-           fs.readdir(currentDirTemp, function (err, files) {
-             if (err)
-             {
-               throw err;
-             }
-             files_parser = files;
-
-           });
-
-           fs.readdir(currentDir, function (err, files) {
-             if (err) throw err;
-             files_mlogc = files;
-             if (files_mlogc.length > files_parser.length)
-             {
-               for (var i = files_mlogc.length - 1; i >= files_parser.length-1; i--) {
-                 var file_delete = currentDir+"/"+files_mlogc[i];
-                 //console.log("DELETANDO ARQUIVO: "+ file_delete);
-                 //fs.unlink(file_delete);
-                 if (fs.existsSync(file_delete)) {
-                 fs.unlinkSync(file_delete, function (err) {
-                     if (err)
-                     {
-                       throw err;
-                     }
-                     //console.log('successfully deleted ' + file_delete);
-                   });
-               }
-
-               }
-
-             }
-
-           })
-
-         })
-}
-
-response.end();
-
-
-
+      fs.readdir(currentDir, function (err, files) {
+        if (err) {
+          throw err;
+        }
+        files_mlogc = files;
+        if (files_mlogc.length > files_parser.length) {
+          for (let i = files_mlogc.length - 1; i >= files_parser.length - 1; i--) {
+            const file_delete = currentDir + '/' + files_mlogc[i];
+            // console.log("DELETANDO ARQUIVO: "+ file_delete);
+            // fs.unlink(file_delete);
+            if (fs.existsSync(file_delete)) {
+              fs.unlinkSync(file_delete, function (err) {
+                if (err) {
+                  throw err;
+                }
+                // console.log('successfully deleted ' + file_delete);
+              });
+            }
+          }
+        }
+      });
+    });
+  }
+  response.end();
 
 }).listen(8080);
 
- // Output a String to the console once the server starts up, letting us know everything
- // starts up correctly
- console.log("Vidya Log Handler running...");
+// Output a String to the console once the server starts up, letting us know everything
+// starts up correctly
+console.log('Vidya Log Handler running...');
