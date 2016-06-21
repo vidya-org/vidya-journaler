@@ -15,11 +15,19 @@ const app = (request, response) => {
   const target_url = url.parse(request.url);
 
   if (target_url.path !== '/') {
-    response.writeHead(HttpStatusCodes.NOT_FOUND, {'Content-Type': 'text/plain'});
-    return response.end();
+    return reject_connection(response, HttpStatusCodes.NOT_FOUND);
+  }
+
+  if (request.method !== 'PUT') {
+    return reject_connection(response, HttpStatusCodes.METHOD_NOT_ALLOWED);
   }
 
   response.end();
 };
+
+function reject_connection (response, status) {
+  response.writeHead(status, {'Content-Type': 'text/plain'});
+  return response.end();
+}
 
 module.exports = http.createServer(basic_auth, app);

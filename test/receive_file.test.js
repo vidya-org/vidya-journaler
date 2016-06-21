@@ -30,5 +30,13 @@ describe('Main API', _ => {
         .expect(HttpStatusCodes.NOT_FOUND)
         .end(done);
     });
+
+    it('should reject Http Method that differs from PUT', done => {
+      request(app)
+        .post('/')
+        .auth('some_user1', 'some_pass1')
+        .expect(HttpStatusCodes.METHOD_NOT_ALLOWED)
+        .end(done);
+    });
   });
 });
