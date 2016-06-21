@@ -22,5 +22,13 @@ describe('Main API', _ => {
         .expect(HttpStatusCodes.OK)
         .end(done);
     });
+
+    it('should reject URLs different from /', done => {
+      request(app)
+        .put('/someurl')
+        .auth('some_user1', 'some_pass1')
+        .expect(HttpStatusCodes.NOT_FOUND)
+        .end(done);
+    });
   });
 });
