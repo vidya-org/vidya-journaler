@@ -54,5 +54,17 @@ describe('Stream file to hd', _ => {
           throw error;
         });
     });
+
+    it('should store contents correctly', done => {
+      const file_stream = fs.createReadStream(source_file_path);
+      return stream_file_to_bd(file_stream)
+        .then(log => {
+          expect(log.text).to.be.equal(original_file_contents);
+          done();
+        })
+        .catch(error => {
+          throw error;
+        });
+    });
   });
 });
