@@ -1,6 +1,6 @@
 {
   "name": "mlogc-journaler",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Routes Mlogc logs",
   "main": "index.js",
   "scripts": {
