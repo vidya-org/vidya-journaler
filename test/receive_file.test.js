@@ -11,8 +11,15 @@ describe('Main API', _ => {
     it('should reject unknown sender', done => {
       request(app)
         .put('/')
-        .send()
         .expect(HttpStatusCodes.UNAUTHORIZED)
+        .end(done);
+    });
+
+    it('should accept known sender', done => {
+      request(app)
+        .put('/')
+        .auth('some_user1', 'some_pass1')
+        .expect(HttpStatusCodes.OK)
         .end(done);
     });
   });
