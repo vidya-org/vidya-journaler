@@ -3,6 +3,7 @@
 const BPromise         = require('bluebird');
 const random           = require('charlatan');
 const expect           = require('chai').expect;
+const Log              = require('../lib/models').Log;
 const tmp              = BPromise.promisifyAll(require('tmp'));
 const fs               = BPromise.promisifyAll(require('fs'));
 const request          = require('supertest');
@@ -15,14 +16,6 @@ describe('Main API', _ => {
       request(app)
         .put('/')
         .expect(HttpStatusCodes.UNAUTHORIZED)
-        .end(done);
-    });
-
-    it('should accept known sender', done => {
-      request(app)
-        .put('/')
-        .auth('some_user1', 'some_pass1')
-        .expect(HttpStatusCodes.OK)
         .end(done);
     });
 
@@ -60,6 +53,14 @@ describe('Main API', _ => {
         });
     });
 
+    beforeEach(done => {
+      Log.remove({})
+        .then(_ => done())
+        .catch(error => {
+          throw error;
+        });
+    });
+
     it('should accept file', done => {
       request(app)
         .put('/')
@@ -67,6 +68,23 @@ describe('Main API', _ => {
         .auth('some_user1', 'some_pass1')
         .expect(HttpStatusCodes.OK)
         .end(done);
+    });
+
+    it('should store file on database', done => {
+      request(app)
+        .put('/')
+        .attach('filename', source_file_path)
+        .auth('some_user1', 'some_pass1')
+        .expect(HttpStatusCodes.OK)
+        .end((err, message) => {
+          expect(err).to.be.null;
+          Log.find({}, (err, logs) => {
+            expect(err).to.be.null;
+
+            expect(logs).to.have.lengthOf(1);
+            return done();
+          });
+        });
     });
   });
 });

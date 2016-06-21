@@ -4,6 +4,7 @@ const http = require('http');
 const path = require('path');
 const url  = require('url');
 const auth = require('http-auth');
+const Log  = require('./lib/models').Log;
 const HttpStatusCodes = require('http-status-codes');
 
 const basic_auth = auth.basic({
@@ -22,7 +23,21 @@ const app = (request, response) => {
     return reject_connection(response, HttpStatusCodes.METHOD_NOT_ALLOWED);
   }
 
-  response.end();
+  let log_contents = '';
+
+  request.on('data', chunk => {
+    log_contents += chunk.toString();
+  });
+  request.on('end', _ => {
+    Log.create({ text: log_contents })
+      .then(_ => {
+        response.writeHead(HttpStatusCodes.OK, {'Content-Type': 'text/plain'});
+        response.end();
+      })
+      .catch(_ => {
+        reject_connection(response, HttpStatusCodes.INTERNAL_SERVER_ERROR);
+      });
+  });
 };
 
 function reject_connection (response, status) {
