@@ -8,6 +8,8 @@ const node_path   = require('path');
 const fs     = BPromise.promisifyAll(require('fs'));
 const crypto = require('crypto');
 const auth   = require('http-auth');
+const generate_log_filename = require('./lib/generate_log_filename');
+
 const logDir = '/usr/local/vidya/parser/logs/new'; /* Diretorio pai: Contem os diretorios que serao criados pelo node.js*/
 
 const currentDirTemp = '/usr/local/vidya/parser/logs/new';
@@ -123,10 +125,9 @@ http.createServer(basic, function (request, response) {
     });
     request.on('end', function () {
       const data = bodyarr.join('');
-      const datetime = new Date();
-      const randomNumber = Math.random() * 999999;
+      const hash = crypto.createHash('md5').update(data).digest('hex');
 
-      const filename = 'log_' + datetime.getTime() + '_' + randomNumber.toFixed(6) + '_' + crypto.createHash('md5').update(data).digest('hex');
+      const filename = generate_log_filename(hash);
       const filepath = currentDir + '/' + filename;
       const filepathTemp = currentDirTemp + '/' + filename;
 
