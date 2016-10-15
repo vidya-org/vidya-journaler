@@ -1,17 +1,17 @@
 'use strict';
 
-const BPromise         = require('bluebird');
+const Bluebird         = require('bluebird');
 const random           = require('charlatan');
 const expect           = require('chai').expect;
 const Log              = require('../lib/models').Log;
-const tmp              = BPromise.promisifyAll(require('tmp'));
-const fs               = BPromise.promisifyAll(require('fs'));
+const tmp              = Bluebird.promisifyAll(require('tmp'));
+const fs               = Bluebird.promisifyAll(require('fs'));
 const request          = require('supertest');
 const HttpStatusCodes  = require('http-status-codes');
 const app              = require('../app');
 
-describe('Main API', _ => {
-  describe('on connection', _ => {
+describe('Main API', () => {
+  describe('on connection', () => {
     it('should reject unknown sender', done => {
       request(app)
         .put('/')
@@ -36,30 +36,18 @@ describe('Main API', _ => {
     });
   });
 
-  describe('receive log file', _ => {
+  describe('receive log file', () => {
     let source_file_path;
-    before(done => {
+
+    before(() => {
       const log_content = random.Lorem.text(10);
 
-      tmp.fileAsync({ mode: 0o600, prefix: 'vidya_journaler_test_' })
-        .then(tmp_file => {
-          source_file_path = tmp_file;
-
-          return fs.writeFileAsync(source_file_path, log_content);
-        })
-        .then(_ => done())
-        .catch(error => {
-          throw error;
-        });
+      return tmp.fileAsync({ mode: 0o600, prefix: 'vidya_journaler_test_' })
+        .then(tmp_file => (source_file_path = tmp_file))
+        .then(() => fs.writeFileAsync(source_file_path, log_content));
     });
 
-    beforeEach(done => {
-      Log.remove({})
-        .then(_ => done())
-        .catch(error => {
-          throw error;
-        });
-    });
+    beforeEach(() => Log.remove({}));
 
     it('should accept file', done => {
       request(app)
@@ -78,12 +66,13 @@ describe('Main API', _ => {
         .expect(HttpStatusCodes.OK)
         .end((err, message) => {
           expect(err).to.be.null;
-          Log.find({}, (err, logs) => {
-            expect(err).to.be.null;
 
-            expect(logs).to.have.lengthOf(1);
-            return done();
-          });
+          Log.find({})
+            .then(logs => {
+              expect(logs).to.have.lengthOf(1);
+              done();
+            })
+            .catch(done);
         });
     });
   });
