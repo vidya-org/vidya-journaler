@@ -19,24 +19,27 @@
   "author": "Vidya-org",
   "license": "MIT",
   "dependencies": {
-    "bluebird": "^3.4.6",
-    "debug": "^2.2.0",
-    "http-auth": "^2.4.10",
-    "http-status-codes": "^1.0.6",
-    "mongoose": "^4.6.3",
-    "ramda": "^0.22.1",
-    "supertest": "^2.0.0",
-    "tmp": "0.0.29"
+    "bluebird": "^3.5.0",
+    "debug": "^3.0.0",
+    "http-auth": "^3.2.3",
+    "http-status-codes": "^1.2.0",
+    "mongoose": "^4.11.6",
+    "ramda": "^0.24.1",
+    "supertest": "^3.0.0",
+    "tmp": "0.0.31"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
-    "chai-as-promised": "^6.0.0",
+    "chai": "^4.1.1",
+    "chai-as-promised": "^7.1.1",
     "charlatan": "^1.1.0",
-    "eslint": "^3.8.0",
-    "eslint-config-standard": "^6.2.0",
-    "eslint-plugin-promise": "^3.0.0",
-    "eslint-plugin-standard": "^2.0.1",
+    "eslint": "^4.4.1",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-chai-friendly": "^0.4.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-node": "^5.1.1",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1",
     "istanbul": "^0.4.5",
-    "mocha": "^3.1.2"
+    "mocha": "^3.5.0"
   }
 }
