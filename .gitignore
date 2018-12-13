@@ -8,7 +8,9 @@ pids
 *.pid
 *.seed
 
+# nyc
 coverage/
+.nyc_output/
 
 # Dependency directories
 node_modules/

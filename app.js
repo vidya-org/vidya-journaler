@@ -13,9 +13,9 @@ const basic_auth = auth.basic({
 });
 
 const app = (request, response) => {
-  const target_url = url.parse(request.url);
+  const target_url = new url.URL(request.url, 'http://localhost');
 
-  if (target_url.path !== '/') {
+  if (target_url.pathname !== '/') {
     return reject_connection(response, HttpStatusCodes.NOT_FOUND);
   }
 
@@ -25,7 +25,7 @@ const app = (request, response) => {
 
   stream_file_to_bd(request)
     .then(_ => {
-      response.writeHead(HttpStatusCodes.OK, {'Content-Type': 'text/plain'});
+      response.writeHead(HttpStatusCodes.OK, { 'Content-Type': 'text/plain' });
       response.end();
     })
     .catch(_ => {
@@ -34,7 +34,7 @@ const app = (request, response) => {
 };
 
 function reject_connection (response, status) {
-  response.writeHead(status, {'Content-Type': 'text/plain'});
+  response.writeHead(status, { 'Content-Type': 'text/plain' });
   return response.end();
 }
 
