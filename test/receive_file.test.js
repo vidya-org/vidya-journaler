@@ -47,7 +47,7 @@ describe('Main API', () => {
         .then(() => fs.writeFileAsync(source_file_path, log_content));
     });
 
-    beforeEach(() => Log.remove({}));
+    beforeEach(() => Log.deleteMany({}));
 
     it('should accept file', done => {
       request(app)

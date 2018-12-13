@@ -22,7 +22,7 @@ describe('Stream file to db', () => {
         .then(tmp_file => fs.writeFileSync(source_file_path, original_file_contents));
     });
 
-    beforeEach(() => Log.remove({}));
+    beforeEach(() => Log.deleteMany({}));
 
     it('should return a promise', () => {
       const file_stream = fs.createReadStream(source_file_path);
