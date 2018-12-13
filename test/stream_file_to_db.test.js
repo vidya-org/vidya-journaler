@@ -1,6 +1,5 @@
 'use strict';
 
-const Bluebird = require('bluebird');
 const random   = require('charlatan');
 const tmp      = Bluebird.promisifyAll(require('tmp'));
 const fs       = Bluebird.promisifyAll(require('fs'));

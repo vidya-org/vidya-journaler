@@ -1,14 +1,18 @@
 'use strict';
 
-const Bluebird         = require('bluebird');
 const random           = require('charlatan');
 const expect           = require('chai').expect;
-const Log              = require('../lib/models').Log;
+const models           = require('../lib/models');
+const Log              = models.Log;
 const tmp              = Bluebird.promisifyAll(require('tmp'));
 const fs               = Bluebird.promisifyAll(require('fs'));
 const request          = require('supertest');
 const HttpStatusCodes  = require('http-status-codes');
 const app              = require('../app');
+
+after(done => {
+  models.connection.close(done);
+});
 
 describe('Main API', () => {
   describe('on connection', () => {
