@@ -1,16 +1,18 @@
 #!/bin/bash
 
+readonly PROJECT_DIR="$1"
+
 function main()
 {
   tput reset
 
   print_header "Running tests..."
-  npm test
+  npm --prefix "$PROJECT_DIR" test
 
   echo
 
   print_header 'Running GIT Status...'
-  git status
+  git -C "$PROJECT_DIR" status
 
   print_timestamp
 }
