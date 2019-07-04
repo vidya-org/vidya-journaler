@@ -1,6 +1,6 @@
 {
   "name": "mlogc-journaler",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Routes Mlogc logs",
   "main": "index.js",
   "scripts": {
@@ -19,27 +19,27 @@
   "author": "Vidya-org",
   "license": "MIT",
   "dependencies": {
-    "bluebird": "^3.5.3",
-    "debug": "^4.1.0",
+    "bluebird": "^3.5.5",
+    "debug": "^4.1.1",
     "http-auth": "^3.2.3",
-    "http-status-codes": "^1.3.0",
-    "mongoose": "^5.3.16",
+    "http-status-codes": "^1.3.2",
+    "mongoose": "^5.6.3",
     "ramda": "^0.26.1",
-    "tmp": "0.0.33"
+    "tmp": "0.1.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "charlatan": "^1.1.0",
-    "eslint": "^5.10.0",
+    "eslint": "^6.0.1",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-chai-friendly": "^0.4.1",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-node": "^8.0.0",
-    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.0",
-    "mocha": "^5.2.0",
-    "nyc": "^13.1.0",
-    "supertest": "^3.3.0"
+    "mocha": "^6.1.4",
+    "nyc": "^14.1.1",
+    "supertest": "^4.0.2"
   }
 }
