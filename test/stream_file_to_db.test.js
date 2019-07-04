@@ -1,6 +1,6 @@
 'use strict';
 
-const random   = require('charlatan');
+const random   = require('faker');
 const tmp      = Bluebird.promisifyAll(require('tmp'));
 const fs       = Bluebird.promisifyAll(require('fs'));
 const expect   = require('chai').expect;
@@ -14,7 +14,7 @@ describe('Stream file to db', () => {
     let source_file_path;
 
     before(() => {
-      original_file_contents = random.Lorem.text(10);
+      original_file_contents = random.lorem.text(10);
 
       return tmp.fileAsync({ mode: 0o640, prefix: 'vidya_journaler_test_' })
         .then(tmp_file => (source_file_path = tmp_file))

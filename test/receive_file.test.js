@@ -1,6 +1,6 @@
 'use strict';
 
-const random           = require('charlatan');
+const random           = require('faker');
 const expect           = require('chai').expect;
 const models           = require('../lib/models');
 const Log              = models.Log;
@@ -44,7 +44,7 @@ describe('Main API', () => {
     let source_file_path;
 
     before(() => {
-      const log_content = random.Lorem.text(10);
+      const log_content = random.lorem.text(10);
 
       return tmp.fileAsync({ mode: 0o600, prefix: 'vidya_journaler_test_' })
         .then(tmp_file => (source_file_path = tmp_file))
