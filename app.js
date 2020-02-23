@@ -9,7 +9,7 @@ const stream_file_to_bd = require('./lib/stream_file_to_bd');
 
 const basic_auth = auth.basic({
   realm: 'Vidya',
-  file:  path.join(__dirname, '/test/test_files/htpasswd')
+  file:  path.join(__dirname, 'test', 'test_files', 'htpasswd')
 });
 
 const app = (request, response) => {
