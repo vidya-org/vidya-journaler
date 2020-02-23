@@ -7,7 +7,7 @@ function main()
 
   while true
   do
-    find "$PROJECT_DIR/lib" "$PROJECT_DIR/test" -type f |
+    find "$PROJECT_DIR/index.js" "$PROJECT_DIR/app.js" "$PROJECT_DIR/lib" "$PROJECT_DIR/test" -type f |
       entr -d bash "$PROJECT_DIR/entr_script.sh" "$PROJECT_DIR"
   done
 }
