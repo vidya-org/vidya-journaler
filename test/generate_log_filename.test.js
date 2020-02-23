@@ -1,9 +1,7 @@
-'use strict';
+import crypto from 'crypto';
+import { expect } from 'chai';
 
-const crypto = require('crypto');
-const expect = require('chai').expect;
-
-const generate_log_filename = require('../lib/generate_log_filename');
+import generate_log_filename from '../lib/generate_log_filename';
 
 describe('Filename generator', () => {
   describe('the generated filename', () => {

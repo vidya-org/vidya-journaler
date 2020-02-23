@@ -1,11 +1,15 @@
 'use strict';
 
-const random   = require('faker');
-const tmp      = Bluebird.promisifyAll(require('tmp'));
-const fs       = Bluebird.promisifyAll(require('fs'));
-const expect   = require('chai').expect;
+import Bluebird from 'bluebird';
+import random from 'faker';
+import { expect } from 'chai';
+import original_tmp from 'tmp';
+import original_fs from 'fs';
 
-const stream_file_to_hd = require('../lib/stream_file_to_hd');
+import stream_file_to_hd from '../lib/stream_file_to_hd';
+
+const tmp = Bluebird.promisifyAll(original_tmp);
+const fs  = Bluebird.promisifyAll(original_fs);
 
 describe('Stream file to hd', () => {
   describe('calling the function', () => {

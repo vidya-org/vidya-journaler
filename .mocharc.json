@@ -1,0 +1,6 @@
+{
+  "reporter": "spec",
+  "recursive": true,
+  "require": "sucrase/register",
+  "ui": "bdd"
+}

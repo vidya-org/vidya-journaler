@@ -1,2 +1,0 @@
-
-global.Bluebird = require('bluebird');

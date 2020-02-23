@@ -1,14 +1,18 @@
 'use strict';
 
-const random           = require('faker');
-const expect           = require('chai').expect;
-const models           = require('../lib/models');
-const Log              = models.Log;
-const tmp              = Bluebird.promisifyAll(require('tmp'));
-const fs               = Bluebird.promisifyAll(require('fs'));
-const request          = require('supertest');
-const HttpStatusCodes  = require('http-status-codes');
-const app              = require('../app');
+import Bluebird from 'bluebird';
+import random from 'faker';
+import { expect } from 'chai';
+import original_tmp from 'tmp';
+import original_fs from 'fs';
+import request from 'supertest';
+import HttpStatusCodes from 'http-status-codes';
+
+import models, { Log } from '../lib/models';
+import app from '../app';
+
+const tmp = Bluebird.promisifyAll(original_tmp);
+const fs  = Bluebird.promisifyAll(original_fs);
 
 after(done => {
   models.connection.close(done);
