@@ -38,4 +38,4 @@ function reject_connection (response, status) {
   return response.end();
 }
 
-module.exports = http.createServer(basic_auth, app);
+module.exports = http.createServer(basic_auth.check(app));
