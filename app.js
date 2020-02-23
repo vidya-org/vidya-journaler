@@ -24,11 +24,11 @@ const app = (request, response) => {
   }
 
   stream_file_to_bd(request)
-    .then(_ => {
+    .then(() => {
       response.writeHead(HttpStatusCodes.OK, { 'Content-Type': 'text/plain' });
       response.end();
     })
-    .catch(_ => {
+    .catch(() => {
       reject_connection(response, HttpStatusCodes.INTERNAL_SERVER_ERROR);
     });
 };
