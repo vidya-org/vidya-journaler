@@ -9,7 +9,7 @@ const stream_file_to_bd = require('./lib/stream_file_to_bd');
 
 const basic_auth = auth.basic({
   realm: 'Vidya',
-  file:  path.join(__dirname, '/test/test_files/htpasswd')
+  file:  path.join(__dirname, 'test', 'test_files', 'htpasswd')
 });
 
 const app = (request, response) => {
@@ -24,11 +24,11 @@ const app = (request, response) => {
   }
 
   stream_file_to_bd(request)
-    .then(_ => {
+    .then(() => {
       response.writeHead(HttpStatusCodes.OK, { 'Content-Type': 'text/plain' });
       response.end();
     })
-    .catch(_ => {
+    .catch(() => {
       reject_connection(response, HttpStatusCodes.INTERNAL_SERVER_ERROR);
     });
 };
@@ -38,4 +38,4 @@ function reject_connection (response, status) {
   return response.end();
 }
 
-module.exports = http.createServer(basic_auth, app);
+module.exports = http.createServer(basic_auth.check(app));
