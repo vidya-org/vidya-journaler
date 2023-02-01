@@ -24,7 +24,7 @@
     "debug": "^4.3.3",
     "http-auth": "^4.1.9",
     "http-status-codes": "^1.4.0",
-    "mongoose": "^5.9.2",
+    "mongoose": "^5.13.15",
     "ramda": "^0.28.0",
     "tmp": "0.1.0"
   },
